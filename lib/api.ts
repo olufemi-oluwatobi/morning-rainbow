@@ -82,6 +82,19 @@ interface BoardJobsResponse {
 }
 
 export const api = {
+  createFastTrackBoard: async (data: { prompt: string }) => {
+    const response = await fetch(`${API_BASE_URL}/boards/fast-track`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+    if (!response.ok) {
+      throw new Error("Failed to create fast track board")
+    }
+    return response.json()
+  },
   // Existing methods...
 
   // Profile Management
