@@ -2,36 +2,7 @@
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"
 
-interface Profile {
-  name: string
-  email: string
-  phone: string
-  location: string
-  linkedin: string
-  github: string
-  website: string
-  skills: string[]
-  experience: Experience[]
-  education: Education[]
-}
-
-interface Experience {
-  title: string
-  company: string
-  location: string
-  startDate: string
-  endDate: string
-  description: string
-}
-
-interface Education {
-  school: string
-  degree: string
-  location: string
-  startDate: string
-  endDate: string
-  description: string
-}
+import type { Profile, Experience, Education, JobPost, ApiResponse, ID } from "./api-types"
 
 interface UserProfile {
   id: string
