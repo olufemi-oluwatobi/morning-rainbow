@@ -38,12 +38,11 @@ import { useBoardJobs } from "@/hooks/use-jobs"
 import { useBoardsStore } from "@/lib/stores/boards-store"
 
 export default function BoardsPage() {
-  const [selectedBoard, setSelectedBoard] = useState<string | null>("Frontend Developer")
   const [showBoardModal, setShowBoardModal] = useState(false)
   const [newBoardPrompt, setNewBoardPrompt] = useState("")
   const createBoard = useCreateFastTrackBoard()
+  const { boards, addBoard, selectedBoard, setSelectedBoard } = useBoardsStore()
   const { data: boardJobsData, isLoading: isLoadingJobs } = useBoardJobs(selectedBoard || "")
-  const { boards, addBoard } = useBoardsStore()
 
   const defaultPrompts = [
     "Frontend Developer",
@@ -130,7 +129,33 @@ export default function BoardsPage() {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
-      {!selectedBoard ? (
+      {boards.length === 0 ? (
+        <div className="max-w-2xl mx-auto text-center space-y-8">
+          <h1 className="text-4xl font-bold">Create Your First Job Board</h1>
+          <p className="text-muted-foreground">Get started by creating a job board that matches your interests</p>
+          <form onSubmit={handleCreateBoard} className="relative">
+            <Input
+              placeholder="Create a new job board..."
+              className="pl-4 pr-12 py-6 text-lg shadow-lg"
+              value={newBoardPrompt}
+              onChange={(e) => setNewBoardPrompt(e.target.value)}
+              disabled={createBoard.isPending}
+            />
+            <Button
+              type="submit"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2"
+              disabled={createBoard.isPending}
+            >
+              {createBoard.isPending ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+            </Button>
+          </form>
+        </div>
+      ) : !selectedBoard ? (
         <div className="max-w-4xl mx-auto space-y-8">
           <h1 className="text-4xl font-bold text-center mb-12">What Job Are You Looking For?</h1>
 

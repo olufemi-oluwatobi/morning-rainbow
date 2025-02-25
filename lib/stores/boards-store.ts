@@ -11,6 +11,8 @@ interface Board {
 
 interface BoardsStore {
   boards: Board[]
+  selectedBoard: string | null
+  setSelectedBoard: (boardName: string | null) => void
   addBoard: (board: Board) => void
   removeBoard: (id: string) => void
   updateBoard: (id: string, updates: Partial<Board>) => void
@@ -20,6 +22,8 @@ export const useBoardsStore = create<BoardsStore>()(
   persist(
     (set) => ({
       boards: [],
+      selectedBoard: null,
+      setSelectedBoard: (boardName) => set({ selectedBoard: boardName }),
       addBoard: (board) => 
         set((state) => ({ 
           boards: [...state.boards, board] 
