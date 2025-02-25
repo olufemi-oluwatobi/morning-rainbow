@@ -326,7 +326,7 @@ export default function OnboardingPage() {
             className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center"
             onAnimationComplete={() => {
               setTimeout(() => {
-                window.location.href = '/boards'
+                window.location.href = '/boards?new=true'
               }, 2000)
             }}
           >
