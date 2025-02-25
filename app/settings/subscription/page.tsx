@@ -1,9 +1,21 @@
+
 "use client"
 
-import { Check } from "lucide-react"
+import { useState } from "react"
+import { Check, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { useSubscription } from "@/providers/subscription-provider"
+import { useToast } from "@/hooks/use-toast"
 
 const tiers = [
   {
@@ -42,13 +54,69 @@ const tiers = [
 
 export default function SubscriptionPage() {
   const { subscription, isLoading } = useSubscription()
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const { toast } = useToast()
+
+  const handleCancelSubscription = async () => {
+    try {
+      // Add your subscription cancellation logic here
+      toast({
+        title: "Subscription cancelled",
+        description: "Your subscription will remain active until the end of the billing period.",
+      })
+      setShowCancelDialog(false)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel subscription. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Subscription Plan</h3>
-        <p className="text-sm text-muted-foreground">Choose the perfect plan for your needs</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-lg font-medium">Subscription Plan</h3>
+          <p className="text-sm text-muted-foreground">Choose the perfect plan for your needs</p>
+        </div>
+        {subscription?.plan !== "Free" && (
+          <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+            <DialogTrigger asChild>
+              <Button variant="destructive">Cancel Subscription</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Cancel Subscription</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to cancel your subscription? You'll lose access to premium features at the end of
+                  your billing period.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center gap-2 bg-muted p-3 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Your subscription will remain active until {new Date(subscription?.expiresAt || "").toLocaleDateString()}
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowCancelDialog(false)}>
+                  Keep Subscription
+                </Button>
+                <Button variant="destructive" onClick={handleCancelSubscription}>
+                  Cancel Subscription
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
+
       <div className="grid gap-6 lg:grid-cols-3">
         {tiers.map((tier) => (
           <Card key={tier.name} className={tier.name === subscription?.plan ? "border-primary" : ""}>
@@ -69,7 +137,11 @@ export default function SubscriptionPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" variant={tier.name === subscription?.plan ? "outline" : "default"}>
+              <Button 
+                className="w-full" 
+                variant={tier.name === subscription?.plan ? "outline" : "default"}
+                disabled={tier.name === subscription?.plan}
+              >
                 {tier.name === subscription?.plan ? "Current Plan" : "Upgrade"}
               </Button>
             </CardFooter>
@@ -79,4 +151,3 @@ export default function SubscriptionPage() {
     </div>
   )
 }
-
