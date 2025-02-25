@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Plus } from "lucide-react"
 import { ArrowRight, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -91,4 +92,3 @@ const features = [
     description: "Get insights and opportunities tailored to your experience level.",
   },
 ]
-
