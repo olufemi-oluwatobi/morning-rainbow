@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ReferralModal } from "@/components/referral-modal"
@@ -24,11 +25,11 @@ export function Nav() {
             <Link href="/boards" className="transition-colors hover:text-foreground/80">
               Boards
             </Link>
-            <Link href="/cv-builder" className="transition-colors hover:text-foreground/80">
-              CV Builder
+            <Link href="/jobs" className="transition-colors hover:text-foreground/80">
+              Jobs
             </Link>
-            <Link href="/settings" className="transition-colors hover:text-foreground/80">
-              Settings
+            <Link href="/profile" className="transition-colors hover:text-foreground/80">
+              Profile
             </Link>
           </nav>
         </div>
@@ -49,15 +50,18 @@ export function Nav() {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">Demo User</p>
-                    <p className="text-xs leading-none text-muted-foreground">demo@example.com</p>
+                    <p className="text-sm font-medium leading-none">My Account</p>
+                    <p className="text-xs leading-none text-muted-foreground">Manage your account</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/settings">Settings</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/settings/subscription">Subscription</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -70,4 +74,3 @@ export function Nav() {
     </header>
   )
 }
-

@@ -17,12 +17,19 @@ export default function Page() {
             </p>
           </div>
           <div className="space-y-4 w-full max-w-sm">
-            <Link href="/boards">
-              <Button className="w-full" size="lg">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <div className="flex gap-4 w-full">
+              <Link href="/onboarding" className="flex-1">
+                <Button className="w-full" size="lg">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/jobs" className="flex-1">
+                <Button className="w-full" variant="outline" size="lg">
+                  Browse Jobs
+                </Button>
+              </Link>
+            </div>
             <p className="text-xs text-muted-foreground">No credit card required. Set up your profile in minutes.</p>
           </div>
         </div>
