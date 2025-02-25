@@ -13,8 +13,21 @@ import { InfoIcon, Loader2 } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function OnboardingPage() {
-  const [state, dispatch] = useReducer(onboardingReducer, initialState)
   const [isStarted, setIsStarted] = useState(false)
+  const { 
+    step,
+    setStep,
+    fullName,
+    setFullName,
+    cv,
+    setCV,
+    linkedin,
+    setLinkedin,
+    addEmployment,
+    addEducation,
+    setProfileSummary,
+    completeOnboarding
+  } = useOnboardingStore()
 
   const steps = [
     {
