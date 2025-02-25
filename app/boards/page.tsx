@@ -35,6 +35,7 @@ import Link from "next/link"
 import { useCreateFastTrackBoard } from "@/hooks/use-boards"
 import { toast } from "sonner"
 import { useBoardJobs } from "@/hooks/use-jobs"
+import { useBoardsStore } from "@/lib/stores/boards-store"
 
 export default function BoardsPage() {
   const [selectedBoard, setSelectedBoard] = useState<string | null>("Frontend Developer")
@@ -160,17 +161,18 @@ export default function BoardsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {jobPrompts.map((prompt, index) => (
+            {allBoards.map((board, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => setSelectedBoard(prompt)}
+                onClick={() => setSelectedBoard(board.name)}
                 className="group cursor-pointer"
               >
                 <div className="bg-card hover:bg-accent p-6 rounded-lg border border-border transition-colors duration-200">
-                  <h3 className="font-medium group-hover:text-accent-foreground">{prompt}</h3>
+                  <h3 className="font-medium group-hover:text-accent-foreground">{board.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-2">{board.description}</p>
                 </div>
               </motion.div>
             ))}
