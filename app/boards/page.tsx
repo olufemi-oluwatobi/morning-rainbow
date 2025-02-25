@@ -211,7 +211,7 @@ export default function BoardsPage() {
                     <DialogDescription>Select an existing board or create a new one</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
-                    {jobPrompts.map((prompt, index) => (
+                    {defaultPrompts.map((prompt, index) => (
                       <div
                         key={index}
                         className="p-4 rounded-lg border cursor-pointer hover:bg-accent"
