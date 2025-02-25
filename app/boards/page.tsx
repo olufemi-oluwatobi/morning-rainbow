@@ -42,8 +42,9 @@ export default function BoardsPage() {
   const [newBoardPrompt, setNewBoardPrompt] = useState("")
   const createBoard = useCreateFastTrackBoard()
   const { data: boardJobsData, isLoading: isLoadingJobs } = useBoardJobs(selectedBoard || "")
+  const { boards, addBoard } = useBoardsStore()
 
-  const jobPrompts = [
+  const defaultPrompts = [
     "Frontend Developer",
     "Senior Product Manager",
     "UX Designer",
@@ -51,6 +52,13 @@ export default function BoardsPage() {
     "DevOps Engineer",
     "Technical Writer",
   ]
+
+  const allBoards = [...boards, ...defaultPrompts.map(prompt => ({
+    id: prompt,
+    name: prompt,
+    description: `Job board for ${prompt} positions`,
+    createdAt: new Date().toISOString()
+  }))]
 
   const jobs = boardJobsData?.jobs || [
     {
@@ -104,7 +112,14 @@ export default function BoardsPage() {
     if (!newBoardPrompt.trim()) return
 
     try {
-      await createBoard.mutateAsync({ prompt: newBoardPrompt })
+      const result = await createBoard.mutateAsync({ prompt: newBoardPrompt })
+      const newBoard = {
+        id: result.id,
+        name: newBoardPrompt,
+        description: result.description || '',
+        createdAt: new Date().toISOString()
+      }
+      addBoard(newBoard)
       setNewBoardPrompt("")
       toast.success("Board created successfully")
     } catch (error) {

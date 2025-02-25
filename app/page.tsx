@@ -29,6 +29,12 @@ export default function Page() {
                   Browse Jobs
                 </Button>
               </Link>
+              <Link href="/boards" className="flex-1">
+                <Button className="w-full" variant="outline" size="lg">
+                  Create Board
+                  <Plus className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
             <p className="text-xs text-muted-foreground">No credit card required. Set up your profile in minutes.</p>
           </div>
