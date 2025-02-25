@@ -91,7 +91,8 @@ export const api = {
       body: JSON.stringify(data),
     })
     if (!response.ok) {
-      throw new Error("Failed to create fast track board")
+      const errorText = await response.text()
+      throw new Error(`Failed to create fast track board: ${errorText}`)
     }
     return response.json()
   },
@@ -107,7 +108,8 @@ export const api = {
       body: JSON.stringify(data),
     })
     if (!response.ok) {
-      throw new Error("Failed to create profile")
+      const errorText = await response.text()
+      throw new Error(`Failed to create profile: ${errorText}`)
     }
     return response.json()
   },
@@ -130,7 +132,8 @@ export const api = {
       body: formData,
     })
     if (!response.ok) {
-      throw new Error("Failed to upload CV")
+      const errorText = await response.text()
+      throw new Error(`Failed to upload CV: ${errorText}`)
     }
     return response.json()
   },
