@@ -38,3 +38,13 @@ export function useGenerateCV() {
   })
 }
 
+export function useAttachCV() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ boardId, cvId }: { boardId: string; cvId: string }) => api.attachCVToBoard(boardId, cvId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["board-analytics", variables.boardId] })
+    },
+  })
+}

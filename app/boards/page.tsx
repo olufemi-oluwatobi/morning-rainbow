@@ -16,6 +16,7 @@ import {
   FileText,
   Send,
   TrendingUp,
+  Loader2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,6 +38,8 @@ import { useBoards, useBoardAnalytics } from "@/hooks/use-boards"
 import { toast } from "sonner"
 import { useBoardJobs } from "@/hooks/use-jobs"
 import { useBoardsStore } from "@/lib/stores/boards-store"
+import { useAttachCV } from "@/hooks/use-cv"
+
 
 export default function BoardsPage() { 
   const [showBoardModal, setShowBoardModal] = useState(false)
