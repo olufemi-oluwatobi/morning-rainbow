@@ -313,25 +313,69 @@ export default function BoardsPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-amber-50/50 dark:bg-amber-950/50 border-amber-100 dark:border-amber-900">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-amber-700 dark:text-amber-300">CV Status</CardTitle>
-                <FileText className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                  {boardAnalyticsData.attachedCV ? "Attached" : "Not Attached"}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 h-8 text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Attach CV
-                </Button>
-              </CardContent>
-            </Card>
+            <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    CV Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-sm text-muted-foreground">
+                      {boardAnalyticsData?.attachedCV ? "CV is attached" : "No CV attached"}
+                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Attach CV
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Attach CV</DialogTitle>
+                          <DialogDescription>
+                            Select a CV to attach to this board
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          {userProfile?.cvs.map((cv) => (
+                            <div key={cv.id} className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <FileText className="h-4 w-4" />
+                                <span>{cv.name}</span>
+                              </div>
+                              <Button
+                                onClick={() => {
+                                  attachCV.mutate(
+                                    { boardId: selectedBoard, cvId: cv.id },
+                                    {
+                                      onSuccess: () => {
+                                        toast.success("CV attached successfully")
+                                      },
+                                      onError: () => {
+                                        toast.error("Failed to attach CV")
+                                      },
+                                    }
+                                  )
+                                }}
+                                disabled={attachCV.isPending}
+                              >
+                                {attachCV.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  "Attach"
+                                )}
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardContent>
+              </Card>
           </div>
 
           {selectedBoard && (
