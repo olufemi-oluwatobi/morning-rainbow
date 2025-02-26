@@ -33,16 +33,19 @@ import { AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { useCreateFastTrackBoard } from "@/hooks/use-boards"
+import { useBoards, useBoardAnalytics } from "@/hooks/use-boards"
 import { toast } from "sonner"
 import { useBoardJobs } from "@/hooks/use-jobs"
 import { useBoardsStore } from "@/lib/stores/boards-store"
 
-export default function BoardsPage() {
+export default function BoardsPage() { 
   const [showBoardModal, setShowBoardModal] = useState(false)
   const [newBoardPrompt, setNewBoardPrompt] = useState("")
   const createBoard = useCreateFastTrackBoard()
   const { boards, addBoard, selectedBoard, setSelectedBoard } = useBoardsStore()
+  console.log(boards)
   const { data: boardJobsData, isLoading: isLoadingJobs } = useBoardJobs(selectedBoard || "")
+  const { data: boardAnalytics, isLoading: isLoadingAnalytics } = useBoardAnalytics(selectedBoard || "")
 
   const defaultPrompts = [
     "Frontend Developer",
@@ -100,7 +103,7 @@ export default function BoardsPage() {
     },
   ]
 
-  const boardAnalytics = {
+  const boardAnalyticsData = {
     totalJobs: 245,
     lastRefresh: "2 hours ago",
     averageSalary: "$125,000",
@@ -114,10 +117,11 @@ export default function BoardsPage() {
     try {
       const result = await createBoard.mutateAsync({ prompt: newBoardPrompt })
       const newBoard = {
-        id: result.id,
+        id: result.board_id,
         name: newBoardPrompt,
         description: result.description || '',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        boardId: result.board_id
       }
       addBoard(newBoard)
       setNewBoardPrompt("")
@@ -192,7 +196,7 @@ export default function BoardsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                onClick={() => setSelectedBoard(board.name)}
+                onClick={() => setSelectedBoard(board.id)}
                 className="group cursor-pointer"
               >
                 <div className="bg-card hover:bg-accent p-6 rounded-lg border border-border transition-colors duration-200">
@@ -254,7 +258,7 @@ export default function BoardsPage() {
                     </Button>
                   </div>
                 </DialogContent>
-              </Dialog>
+              </Dialog>-
             </div>
           </div>
 
@@ -266,7 +270,7 @@ export default function BoardsPage() {
                 <Search className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{boardAnalytics.totalJobs}</div>
+                <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{boardAnalyticsData.totalJobs}</div>
                 <p className="text-xs text-blue-600/80 dark:text-blue-400/80 flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
                   +12 from last week
@@ -281,7 +285,7 @@ export default function BoardsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                  {boardAnalytics.lastRefresh}
+                  {boardAnalyticsData.lastRefresh}
                 </div>
                 <Button
                   variant="ghost"
@@ -300,7 +304,7 @@ export default function BoardsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-700 dark:text-green-300">
-                  {boardAnalytics.averageSalary}
+                  {boardAnalyticsData.averageSalary}
                 </div>
                 <p className="text-xs text-green-600/80 dark:text-green-400/80">Based on available listings</p>
               </CardContent>
@@ -313,7 +317,7 @@ export default function BoardsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                  {boardAnalytics.attachedCV ? "Attached" : "Not Attached"}
+                  {boardAnalyticsData.attachedCV ? "Attached" : "Not Attached"}
                 </div>
                 <Button
                   variant="ghost"
@@ -326,6 +330,100 @@ export default function BoardsPage() {
               </CardContent>
             </Card>
           </div>
+
+          {selectedBoard && (
+            <div className="mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="h-4 w-4" />
+                      Salary Range
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingAnalytics ? (
+                      <div>Loading...</div>
+                    ) : (
+                      <div className="text-2xl font-bold">
+                        ${boardAnalytics?.salary_range.min.toLocaleString()} - ${boardAnalytics?.salary_range.max.toLocaleString()}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="h-4 w-4" />
+                      CV Strength
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingAnalytics ? (
+                      <div>Loading...</div>
+                    ) : (
+                      <div>
+                        <div className="text-2xl font-bold">{boardAnalytics?.cv_strength_score}%</div>
+                        <div className="mt-2">
+                          <div className="text-sm text-muted-foreground">Recommended Improvements:</div>
+                          <ul className="mt-1 space-y-1">
+                            {boardAnalytics?.recommended_improvements.map((improvement, i) => (
+                              <li key={i} className="text-sm">{improvement}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Skills Match
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingAnalytics ? (
+                      <div>Loading...</div>
+                    ) : (
+                      <div>
+                        <div className="text-2xl font-bold">{boardAnalytics?.skill_match_score}%</div>
+                        <div className="mt-2">
+                          <div className="text-sm text-muted-foreground">Missing Skills:</div>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {boardAnalytics?.top_missing_skills.map((skill, i) => (
+                              <Badge key={i} variant="secondary">{skill}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Experience Match
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingAnalytics ? (
+                      <div>Loading...</div>
+                    ) : (
+                      <div className="text-2xl font-bold">
+                        {boardAnalytics?.experience_match_score}%
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
 
           {/* Jobs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -399,4 +497,3 @@ export default function BoardsPage() {
     </div>
   )
 }
-

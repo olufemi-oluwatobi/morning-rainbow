@@ -31,15 +31,17 @@ interface SalaryEstimate {
   currency: string
 }
 
-interface JobPost {
-  id: string
-  title: string
-  company: string
-  location: string
-  description: string
-  salary_estimate: SalaryEstimate
-  match_score: number
-  match_rationale: string
+interface BoardAnalytics {
+  salary_range: {
+    min: number
+    max: number
+    currency: string
+  }
+  cv_strength_score: number
+  skill_match_score: number
+  experience_match_score: number
+  top_missing_skills: string[]
+  recommended_improvements: string[]
 }
 
 interface BoardJobsResponse {
@@ -129,7 +131,7 @@ export const api = {
 
   // CV Generation
   generateCV: async (params: GenerateRequest): Promise<CVResponse> => {
-    const queryString = new URLSearchParams(params as Record<string, string>).toString()
+    const queryString = new URLSearchParams(params as unknown as Record<string, string>).toString()
     const response = await fetch(`${API_BASE_URL}/generate-cv?${queryString}`, {
       method: "POST",
     })
@@ -141,7 +143,7 @@ export const api = {
 
   // Cover Letter Generation
   generateCoverLetter: async (params: GenerateRequest): Promise<CoverLetterResponse> => {
-    const queryString = new URLSearchParams(params as Record<string, string>).toString()
+    const queryString = new URLSearchParams(params as unknown as Record<string, string>).toString()
     const response = await fetch(`${API_BASE_URL}/generate-cover-letter?${queryString}`, {
       method: "POST",
     })
@@ -188,6 +190,11 @@ export const api = {
 
   getBoardJobs: async (boardId: string): Promise<BoardJobsResponse> => {
     // For development, return dummy data
+    const response = await fetch(`${API_BASE_URL}/boards/${boardId}/jobs`)
+    if (!response.ok) {
+      throw new Error("Failed to get board jobs")
+    }
+    return response.json()
     return {
       total_jobs: 2,
       jobs: [
@@ -245,5 +252,17 @@ export const api = {
       ],
     }
   },
-}
 
+  getBoardAnalytics: async (boardId: string): Promise<BoardAnalytics> => {
+    const response = await fetch(`${API_BASE_URL}/boards/${boardId}/analytics`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    if (!response.ok) {
+      throw new Error("Failed to fetch board analytics")
+    }
+    return response.json()
+  },
+}
